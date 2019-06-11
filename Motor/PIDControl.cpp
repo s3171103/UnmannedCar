@@ -3,9 +3,6 @@ PidControl::PidControl()
 {
   last_error = 0;
   errorAccmu = 0;
-  pidP = 0;
-  pidI = 0;
-  pidD = 0;
 
 
 }
@@ -23,7 +20,8 @@ float PidControl::updatePid(float targetValue, float currentValue)
   float pidTerm = 0;
   float error = 0;
   error = abs(targetValue) - abs(currentValue);
-  
+  Serial.print("pidP: ");
+  Serial.println(pidP);
   errorAccmu += error;
   //  errorAccmu = constrain(errorAccmu,0,)
   pidTerm = (pidP * error) - abs(pidI * (error - last_error)) + (pidD * errorAccmu);

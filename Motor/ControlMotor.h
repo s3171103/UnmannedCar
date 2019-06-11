@@ -16,18 +16,18 @@ public:
     ~ControlMotor();
     void printMotorInfo();
     void getMotorData();
-    void motorControll(bool switch1, bool switch2, bool switch3, bool switch4);
-    void motorControllForward();
-    void motorControllBackward();
-    void motorControllTurnRight();
-    void motorControllTurnLeft();
-    void motorControllStop();
-    int getParam();
+    void motorControl(bool switch1, bool switch2, bool switch3, bool switch4);
+    void motorControlForward();
+    void motorControlBackward();
+    void motorControlTurnRight();
+    void motorControlTurnLeft();
+    void motorControlStop();
     float updatePid(float command, float targetValue, float currentValue);
     void rightEncoderEvent();
     void leftEncoderEvent();
     void MotorInital();
     void MotorGo();
+    void setMotorSpeed(float motorSp);
 
     unsigned long lastMilli; // loop timing
     unsigned long lastMilliPrint;
@@ -35,7 +35,7 @@ public:
     volatile long motorCountR;
     float speedActR;
     float speedActL;
-    float speedReqR;
+    float motorSpeed;
     float speedReqL;
     float pwmVal_R;
     float pwmVal_L;

@@ -24,15 +24,13 @@ ControlMotor::ControlMotor()
   volatile long motorCountR = 0;
   float speedActR = 0;
   float speedActL = 0;
-  float speedReqR = 0;
+  float motorSpeed = 0;
   float speedReqL = 0;
   float pwmVal_R = 0;
   float pwmVal_L = 0;
   MotorInital();
   
   
-
-
 }
 ControlMotor::~ControlMotor(){
 }
@@ -45,19 +43,18 @@ void ControlMotor::MotorInital(){
   pinMode(LH_ENCODER_B, INPUT);
   pinMode(RH_ENCODER_A, INPUT);
   pinMode(RH_ENCODER_B, INPUT);
-  PidControlInstance.setPid(0.04,Ki,Kd);
+  PidControlInstance.setPid(Kp,Ki,Kd);
 }
 
 
 void ControlMotor::MotorGo()
 {
-  getParam();
   if ((millis() - lastMilli) >= LOOPTIME)
   { // enter tmed loop
     lastMilli = millis();
     printMotorInfo();
     getMotorData();                                       // calculate speed, volts and Amps
-    pwmVal_R = PidControlInstance.updatePid(speedReqR, speedActR); // compute PWM value
+    pwmVal_R = PidControlInstance.updatePid(motorSpeed, speedActR); // compute PWM value
     // pwmVal_L = updatePid(pwmVal_L, speedReqL, speedActL);
   }
   analogWrite(ENA, pwmVal_R + 30.0);
@@ -72,7 +69,7 @@ void ControlMotor::printMotorInfo()
 
 //    Serial.print(speedActR);
 //    Serial.print(",");
-//    Serial.println(speedReqR);
+//    Serial.println(motorSpeed);
   }
 }
 
@@ -86,86 +83,34 @@ void ControlMotor::getMotorData()
   countAnt_L = motorCountL;
 }
 
-void ControlMotor::motorControll(bool switch1, bool switch2, bool switch3, bool switch4)
+void ControlMotor::motorControl(bool switch1, bool switch2, bool switch3, bool switch4)
 {
   digitalWrite(IN1, switch1);
   digitalWrite(IN2, switch2);
   digitalWrite(IN3, switch3);
   digitalWrite(IN4, switch4);
 }
-void ControlMotor::motorControllForward()
+void ControlMotor::motorControlForward()
 {
-  motorControll(LOW, HIGH, LOW, HIGH);
+  motorControl(LOW, HIGH, LOW, HIGH);
 }
-void ControlMotor::motorControllBackward()
+void ControlMotor::motorControlBackward()
 {
-  motorControll(HIGH, LOW, HIGH, LOW);
+  motorControl(HIGH, LOW, HIGH, LOW);
 }
-void ControlMotor::motorControllTurnRight()
+void ControlMotor::motorControlTurnRight()
 {
-  motorControll(HIGH, LOW, LOW, HIGH);
+  motorControl(HIGH, LOW, LOW, HIGH);
 }
-void ControlMotor::motorControllTurnLeft()
+void ControlMotor::motorControlTurnLeft()
 {
-  motorControll(LOW, HIGH, HIGH, LOW);
+  motorControl(LOW, HIGH, HIGH, LOW);
 }
-void ControlMotor::motorControllStop()
+void ControlMotor::motorControlStop()
 {
-  motorControll(LOW, LOW, HIGH, LOW);
+  motorControl(LOW, LOW, HIGH, LOW);
 }
 
-int ControlMotor::getParam()
-{
-  char param, cmd;
-  if (!Serial.available())
-    return 0;
-  delay(10);
-  param = Serial.read(); // get parameter byte
-  if (!Serial.available())
-    return 0;
-  cmd = Serial.read(); // get command byte
-  Serial.flush();
-  switch (param)
-  {
-  case 'v': // adjust speed
-    if (cmd == '+')
-    {
-      speedReqR += CHANGESPEED;
-      speedReqL += CHANGESPEED;
-      if (speedReqR > 10000)
-        speedReqR = 10000;
-      if (speedReqL > 10000)
-        speedReqL = 10000;
-    }
-    if (cmd == '-')
-    {
-      speedReqR -= CHANGESPEED;
-      speedReqL -= CHANGESPEED;
-      if (speedReqR < 0)
-        speedReqR = 0;
-      if (speedReqL < 0)
-        speedReqL = 0;
-    }
-    break;
-  case 's': // adjust direction
-    if (cmd == '+')
-    {
-      motorControllForward();
-    }
-    if (cmd == '-')
-    {
-      motorControllBackward();
-    }
-    break;
-  case 'o': // user should type "oo"
-    motorControllStop();
-    speedReqR = 0;
-    speedReqL = 0;
-    break;
-  default:
-    Serial.println("???");
-  }
-}
 
 void ControlMotor::rightEncoderEvent()
 {
@@ -189,3 +134,8 @@ void ControlMotor::leftEncoderEvent()
     motorCountL--;
   }
 }
+
+void ControlMotor::setMotorSpeed(float motorSp){
+  motorSpeed = motorSp;
+}
+
