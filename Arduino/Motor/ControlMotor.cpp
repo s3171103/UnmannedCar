@@ -67,9 +67,9 @@ void ControlMotor::printMotorInfo()
   {
     lastMilliPrint = millis();
 
-//    Serial.print(speedActR);
-//    Serial.print(",");
-//    Serial.println(motorSpeed);
+    Serial.print(speedActR);
+    Serial.print(",");
+    Serial.println(motorSpeed);
   }
 }
 
