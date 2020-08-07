@@ -5,7 +5,7 @@ class PidControl
 public:
     PidControl();
     ~PidControl();
-    float updatePid(float targetValue, float currentValue);
+    float updatePid(float targetValue, float currentValue, unsigned int dt);
     void setPid(float kp, float ki, float kd);
     float pidP;
     float pidI;
